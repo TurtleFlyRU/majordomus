@@ -41,3 +41,7 @@ METODS.md
 .coverage
 coverage.xml
 htmlcov/
+.gitignore
+execution_plan.yaml
+PLAN.md
+AGENTS.md
