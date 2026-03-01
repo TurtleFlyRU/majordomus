@@ -112,7 +112,6 @@ majordomus workspace validate --workspace-file majordomus.workspace.yaml
 - `majordomus.workspace.yaml`
 
 Repository guidance sources:
-- [METODS.md](METODS.md) (general engineering methodology)
 - [METODS_ARCH_DEV.ru.md](METODS_ARCH_DEV.ru.md) (ARCH/DEV operational guide, RU)
 - [METODS_ARCH_DEV.en.md](METODS_ARCH_DEV.en.md) (ARCH/DEV operational guide, EN)
 
