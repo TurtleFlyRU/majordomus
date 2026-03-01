@@ -1,0 +1,16 @@
+from __future__ import annotations
+
+from pathlib import Path
+from typing import Protocol
+
+
+class FileSystemPort(Protocol):
+    def exists(self, path: Path) -> bool: ...
+
+    def is_dir(self, path: Path) -> bool: ...
+
+    def is_file(self, path: Path) -> bool: ...
+
+    def read_text(self, path: Path) -> str: ...
+
+    def glob(self, path: Path, pattern: str) -> list[Path]: ...

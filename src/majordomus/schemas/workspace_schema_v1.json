@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["workspace_name", "projects"],
+  "properties": {
+    "workspace_name": {"type": "string", "minLength": 1},
+    "defaults": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ordering": {"type": "string", "enum": ["by_name", "as_listed"]},
+        "governance_dir": {"type": "string", "minLength": 1},
+        "missing_governance": {"type": "string", "enum": ["fail", "skip"]}
+      }
+    },
+    "projects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "path"],
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "path": {"type": "string", "minLength": 1},
+          "governance_dir": {"type": "string", "minLength": 1},
+          "missing_governance": {"type": "string", "enum": ["fail", "skip"]}
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,5 @@
+workspace_name: bad
+projects:
+  - name: broken
+    path: projects/x
+  - invalid: [

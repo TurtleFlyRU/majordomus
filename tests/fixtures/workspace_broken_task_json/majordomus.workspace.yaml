@@ -1,0 +1,8 @@
+workspace_name: ws-broken-task
+defaults:
+  ordering: as_listed
+  governance_dir: .majordomus
+  missing_governance: fail
+projects:
+  - name: proj_bad
+    path: projects/proj_bad

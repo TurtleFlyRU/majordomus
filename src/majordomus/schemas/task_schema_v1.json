@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "id", "title", "status"],
+  "properties": {
+    "schema_version": {"type": "integer", "const": 1},
+    "id": {"type": "string", "pattern": "^TASK-[0-9]{4,}$"},
+    "title": {"type": "string", "minLength": 1},
+    "status": {"type": "string", "minLength": 1},
+    "owner_role": {"type": "string", "minLength": 1},
+    "created_at": {"type": "string", "format": "date-time"},
+    "updated_at": {"type": "string", "format": "date-time"},
+    "transitions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["at", "from", "to", "role"],
+        "properties": {
+          "at": {"type": "string", "format": "date-time"},
+          "from": {"type": "string", "minLength": 1},
+          "to": {"type": "string", "minLength": 1},
+          "role": {"type": "string", "minLength": 1},
+          "note": {"type": "string"}
+        }
+      }
+    }
+  }
+}

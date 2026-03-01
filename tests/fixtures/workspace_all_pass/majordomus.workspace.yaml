@@ -1,0 +1,10 @@
+workspace_name: ws-all-pass
+defaults:
+  ordering: by_name
+  governance_dir: .majordomus
+  missing_governance: fail
+projects:
+  - name: proj_b
+    path: projects/proj_b
+  - name: proj_a
+    path: projects/proj_a

@@ -1,0 +1,4 @@
+defaults:
+  ordering: by_name
+projects:
+  - name: only_name

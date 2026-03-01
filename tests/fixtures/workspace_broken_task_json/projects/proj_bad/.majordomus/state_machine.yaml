@@ -1,0 +1,7 @@
+version: 1
+states: [todo, done]
+initial_state: todo
+transitions:
+  - from: todo
+    to: done
+    allowed_roles: [dev]

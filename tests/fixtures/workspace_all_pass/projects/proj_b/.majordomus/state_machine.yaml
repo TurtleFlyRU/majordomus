@@ -1,0 +1,10 @@
+version: 1
+states: [todo, review, done]
+initial_state: todo
+transitions:
+  - from: todo
+    to: review
+    allowed_roles: [qa]
+  - from: review
+    to: done
+    allowed_roles: [qa]

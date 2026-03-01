@@ -1,0 +1,39 @@
+{
+  "exit_code": 0,
+  "issues": [],
+  "mode": "validate",
+  "ordering": "by_name",
+  "project_reports": [
+    {
+      "issues": [],
+      "project": "proj_a",
+      "stats": {
+        "errors": 0,
+        "tasks": 1,
+        "time_ms": 0,
+        "warns": 0
+      },
+      "status": "PASS"
+    },
+    {
+      "issues": [],
+      "project": "proj_b",
+      "stats": {
+        "errors": 0,
+        "tasks": 1,
+        "time_ms": 0,
+        "warns": 0
+      },
+      "status": "PASS"
+    }
+  ],
+  "summary": {
+    "errors": 0,
+    "failed_projects": 0,
+    "passed_projects": 2,
+    "skipped_projects": 0,
+    "total_projects": 2,
+    "warns": 0
+  },
+  "workspace": "ws-all-pass"
+}

@@ -1,0 +1,44 @@
+execution_plan:
+  plan_id: "majordomus-v1"
+  updated_at: "2026-03-01"
+  current_stage: 8
+  stage_statuses:
+    - stage: 0
+      key: "plan_tracking_setup"
+      title: "Machine-readable plan published in docs"
+      status: "completed"
+      notes: "Tracking file created and linked from AGENTS.md and README.md."
+    - stage: 1
+      key: "dto_enums_util"
+      title: "DTO/enums/util + deterministic helpers"
+      status: "completed"
+    - stage: 2
+      key: "schemas_loader_validator"
+      title: "Built-in schemas + schema loader + validator adapter"
+      status: "completed"
+    - stage: 3
+      key: "governance_core"
+      title: "Task registry + state machine + roles"
+      status: "completed"
+    - stage: 4
+      key: "project_engine"
+      title: "Project mode engine"
+      status: "completed"
+    - stage: 5
+      key: "workspace_engine"
+      title: "Workspace mode engine"
+      status: "completed"
+    - stage: 6
+      key: "cli_render"
+      title: "CLI commands + renderers"
+      status: "completed"
+    - stage: 7
+      key: "fixtures_tests"
+      title: "Fixtures + unit/integration + golden deterministic tests"
+      status: "completed"
+      notes: "pytest installed via apt; full test suite passes (16 passed)."
+    - stage: 8
+      key: "readme_finalize"
+      title: "README finalization and usage examples"
+      status: "completed"
+      notes: "Release checklist passed: make ci OK, editable install OK, majordomus --help OK."

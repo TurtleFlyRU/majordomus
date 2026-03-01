@@ -1,0 +1,10 @@
+workspace_name: ws-one-fail
+defaults:
+  ordering: as_listed
+  governance_dir: .majordomus
+  missing_governance: fail
+projects:
+  - name: proj_ok
+    path: projects/proj_ok
+  - name: proj_missing
+    path: projects/proj_missing

@@ -1,0 +1,8 @@
+workspace_name: ws-missing-gov-skip
+defaults:
+  ordering: as_listed
+  governance_dir: .majordomus
+  missing_governance: skip
+projects:
+  - name: proj_skip
+    path: projects/proj_skip
