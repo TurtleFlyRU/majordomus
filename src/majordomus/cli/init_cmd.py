@@ -380,6 +380,10 @@ def _default_trinity_tasks() -> list[dict[str, Any]]:
             "title": "Bootstrap Trinity governance",
             "status": "draft",
             "owner_role": "ARCH",
+            "metadata": {
+                "seed_template": True,
+                "execution_status": "not_executed",
+            },
             "assignment": {
                 "goal": "Establish governance process and task lifecycle",
                 "scope_in": ["setup governance files", "validate pipeline"],
@@ -400,6 +404,10 @@ def _default_trinity_tasks() -> list[dict[str, Any]]:
             "title": "Define Trinity coding conventions and CI gates",
             "status": "approved",
             "owner_role": "ARCH",
+            "metadata": {
+                "seed_template": True,
+                "execution_status": "not_executed",
+            },
             "created_at": "2026-03-01T13:20:00Z",
             "updated_at": "2026-03-01T13:28:00Z",
             "assignment": {
@@ -439,6 +447,10 @@ def _default_trinity_tasks() -> list[dict[str, Any]]:
             "title": "Implement core project skeleton",
             "status": "dev_done",
             "owner_role": "DEV",
+            "metadata": {
+                "seed_template": True,
+                "execution_status": "not_executed",
+            },
             "created_at": "2026-03-01T13:30:00Z",
             "updated_at": "2026-03-01T13:45:00Z",
             "assignment": {
@@ -487,6 +499,10 @@ def _default_trinity_tasks() -> list[dict[str, Any]]:
             "title": "QA verify skeleton quality and determinism",
             "status": "qa_done",
             "owner_role": "AUDITOR",
+            "metadata": {
+                "seed_template": True,
+                "execution_status": "not_executed",
+            },
             "created_at": "2026-03-01T13:40:00Z",
             "updated_at": "2026-03-01T13:58:00Z",
             "assignment": {
@@ -560,6 +576,10 @@ def _default_trinity_tasks() -> list[dict[str, Any]]:
             "title": "Architect final review and close baseline phase",
             "status": "done",
             "owner_role": "ARCH",
+            "metadata": {
+                "seed_template": True,
+                "execution_status": "not_executed",
+            },
             "created_at": "2026-03-01T13:50:00Z",
             "updated_at": "2026-03-01T14:05:00Z",
             "assignment": {

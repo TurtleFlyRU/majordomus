@@ -91,3 +91,16 @@ def test_init_trinity_profile_creates_policy_and_templates(capsys, tmp_path: Pat
     ws_payload = json.loads(capsys.readouterr().out)
     assert ws_code == 0
     assert ws_payload["summary"]["failed_projects"] == 0
+
+
+def test_init_marks_seed_tasks_as_not_executed(capsys, tmp_path: Path) -> None:
+    code = run(["--format", "json", "init", "--path", str(tmp_path), "--profile", "trinity"])
+    _ = json.loads(capsys.readouterr().out)
+
+    assert code == 0
+    for idx in range(1, 6):
+        task_path = tmp_path / ".majordomus" / "tasks" / f"TASK-{idx:04d}.json"
+        payload = json.loads(task_path.read_text(encoding="utf-8"))
+        metadata = payload.get("metadata", {})
+        assert metadata.get("seed_template") is True
+        assert metadata.get("execution_status") == "not_executed"

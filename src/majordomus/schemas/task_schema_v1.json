@@ -9,6 +9,17 @@
     "title": {"type": "string", "minLength": 1},
     "status": {"type": "string", "minLength": 1},
     "owner_role": {"type": "string", "minLength": 1},
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "seed_template": {"type": "boolean"},
+        "execution_status": {
+          "type": "string",
+          "enum": ["not_executed", "in_progress", "executed"]
+        }
+      }
+    },
     "created_at": {"type": "string", "format": "date-time"},
     "updated_at": {"type": "string", "format": "date-time"},
     "transitions": {
