@@ -3,11 +3,11 @@ from __future__ import annotations
 import time
 
 from majordomus.core.domain import (
+    PRJ_GOVERNANCE_MISSING,
+    PRJ_PATH_ESCAPE,
     Issue,
     Location,
     MissingGovernancePolicy,
-    PRJ_GOVERNANCE_MISSING,
-    PRJ_PATH_ESCAPE,
     ProjectContext,
     ProjectReport,
     ProjectStats,
@@ -64,9 +64,7 @@ class ProjectEngine:
         if not self._fs.is_dir(governance_root):
             should_skip = ctx.missing_governance == MissingGovernancePolicy.SKIP
             severity = Severity.WARN if should_skip else Severity.ERROR
-            status = (
-                ProjectStatus.SKIP if should_skip else ProjectStatus.FAIL
-            )
+            status = ProjectStatus.SKIP if should_skip else ProjectStatus.FAIL
             issues.append(
                 Issue(
                     code=PRJ_GOVERNANCE_MISSING,
