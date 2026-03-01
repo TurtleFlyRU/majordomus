@@ -11,6 +11,7 @@
   - `roles_schema_v1.json`
   - `state_machine_schema_v1.json`
   - `task_schema_v1.json`
+  - `role_policy_schema_v1.json`
 - Schema loading via `importlib.resources`.
 - Governance layer:
   - role validation
@@ -25,6 +26,10 @@
   - `majordomus init`
   - `majordomus validate`
   - `majordomus workspace validate|status|audit`
+- `majordomus init --profile trinity` bootstrap profile.
+- Role policy enforcement (`POL100`, `POL200`) and Trinity task payload checks (`TASK300`).
+- `majordomus init` default profile switched to `trinity` with full prompt/task/policy bundle.
+- Trinity bootstrap now also generates integrated ARCH/DEV methodology docs in RU/EN.
 - Human/JSON renderers and exit code contract (`0/2/3/4`).
 - Test suite with fixtures and deterministic golden output test.
 - `Makefile` targets: `fmt`, `lint`, `typecheck`, `test`, `ci`.

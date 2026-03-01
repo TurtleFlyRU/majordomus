@@ -25,6 +25,95 @@
           "note": {"type": "string"}
         }
       }
+    },
+    "assignment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["goal", "scope_in", "scope_out", "constraints"],
+      "properties": {
+        "goal": {"type": "string", "minLength": 1},
+        "scope_in": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "scope_out": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "constraints": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "resources": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "implementation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["changed_files", "checks_run"],
+      "properties": {
+        "changed_files": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "checks_run": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scenarios", "results"],
+      "properties": {
+        "scenarios": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "results": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "regressions": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "path", "kind", "result"],
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "path": {"type": "string", "minLength": 1},
+          "kind": {"type": "string", "minLength": 1},
+          "result": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "acceptance_checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "status"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "status": {"type": "string", "enum": ["pending", "pass", "fail"]},
+          "note": {"type": "string"}
+        }
+      }
     }
   }
 }

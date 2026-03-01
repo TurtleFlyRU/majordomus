@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "id": "TASK-0001",
+  "title": "Forbidden transition sample",
+  "status": "approved",
+  "owner_role": "DEV",
+  "assignment": {
+    "goal": "implement feature",
+    "scope_in": ["feature"],
+    "scope_out": ["infra"],
+    "constraints": ["contract-first"],
+    "resources": ["doc"]
+  },
+  "transitions": [
+    {
+      "at": "2026-03-01T12:00:00Z",
+      "from": "approved",
+      "to": "in_progress",
+      "role": "DEV",
+      "note": "start"
+    }
+  ]
+}

@@ -30,6 +30,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     init_parser.add_argument("--no-workspace", action="store_true")
     init_parser.add_argument("--force", action="store_true")
+    init_parser.add_argument("--profile", choices=["basic", "trinity"], default="trinity")
 
     workspace_parser = subparsers.add_parser("workspace")
     workspace_sub = workspace_parser.add_subparsers(dest="workspace_command", required=True)
@@ -68,6 +69,7 @@ def run(argv: list[str] | None = None) -> int:
                 workspace_file=args.workspace_file,
                 include_workspace=not args.no_workspace,
                 force=args.force,
+                profile=args.profile,
             )
             print(render_init_report(init_report, args.output_format))
             return 0

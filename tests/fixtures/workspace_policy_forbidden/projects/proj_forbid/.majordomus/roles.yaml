@@ -1,0 +1,8 @@
+version: 1
+roles:
+  - id: ARCH
+    name: Architect
+  - id: DEV
+    name: Developer
+  - id: AUDITOR
+    name: Auditor

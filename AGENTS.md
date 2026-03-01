@@ -1,6 +1,8 @@
 ### 1) Read docs first
 - `AGENTS.md`
 - `METODS.md`
+- `METODS_ARCH_DEV.ru.md`
+- `METODS_ARCH_DEV.en.md`
 
 ### 2) Who r u
 Ты — инженер-исполнитель. Твоя задача: полностью реализовать Major Domus v1 (Multi-Project Governance Orchestrator) как Python пакет в src-layout, строго по требованиям.

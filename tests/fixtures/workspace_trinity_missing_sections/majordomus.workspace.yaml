@@ -1,0 +1,8 @@
+workspace_name: ws-trinity-missing
+defaults:
+  ordering: as_listed
+  governance_dir: .majordomus
+  missing_governance: fail
+projects:
+  - name: proj_missing
+    path: projects/proj_missing

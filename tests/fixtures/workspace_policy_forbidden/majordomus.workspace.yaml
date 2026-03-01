@@ -1,0 +1,8 @@
+workspace_name: ws-policy-forbidden
+defaults:
+  ordering: as_listed
+  governance_dir: .majordomus
+  missing_governance: fail
+projects:
+  - name: proj_forbid
+    path: projects/proj_forbid

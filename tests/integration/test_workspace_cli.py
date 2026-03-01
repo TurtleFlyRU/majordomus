@@ -119,3 +119,33 @@ def test_workspace_json_matches_golden(capsys) -> None:
 
     assert code == 0
     assert payload == expected
+
+
+def test_trinity_invalid_policy_schema_yields_pol100(capsys) -> None:
+    workspace_file = FIXTURES / "workspace_policy_invalid" / "majordomus.workspace.yaml"
+
+    code, payload = _run_workspace_json(capsys, workspace_file)
+
+    assert code == 2
+    report = payload["project_reports"][0]
+    assert any(issue["code"] == "POL100" for issue in report["issues"])
+
+
+def test_trinity_forbidden_transition_by_policy_yields_pol200(capsys) -> None:
+    workspace_file = FIXTURES / "workspace_policy_forbidden" / "majordomus.workspace.yaml"
+
+    code, payload = _run_workspace_json(capsys, workspace_file)
+
+    assert code == 2
+    report = payload["project_reports"][0]
+    assert any(issue["code"] == "POL200" for issue in report["issues"])
+
+
+def test_trinity_missing_sections_yield_task300(capsys) -> None:
+    workspace_file = FIXTURES / "workspace_trinity_missing_sections" / "majordomus.workspace.yaml"
+
+    code, payload = _run_workspace_json(capsys, workspace_file)
+
+    assert code == 2
+    report = payload["project_reports"][0]
+    assert any(issue["code"] == "TASK300" for issue in report["issues"])

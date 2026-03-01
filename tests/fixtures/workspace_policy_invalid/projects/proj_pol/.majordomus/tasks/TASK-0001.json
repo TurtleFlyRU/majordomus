@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "id": "TASK-0001",
+  "title": "Policy invalid sample",
+  "status": "draft",
+  "owner_role": "ARCH",
+  "assignment": {
+    "goal": "create policy",
+    "scope_in": ["a"],
+    "scope_out": ["b"],
+    "constraints": ["c"],
+    "resources": ["r"]
+  },
+  "transitions": []
+}

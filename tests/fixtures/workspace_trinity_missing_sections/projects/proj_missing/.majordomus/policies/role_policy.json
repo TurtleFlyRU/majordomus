@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "default_actions": ["VIEW"],
+  "rules": [
+    {"role": "ARCH", "pattern": ".majordomus/tasks/*.json", "actions": ["VIEW", "TRANSITION"]},
+    {"role": "DEV", "pattern": ".majordomus/tasks/*.json", "actions": ["VIEW", "TRANSITION"]},
+    {"role": "AUDITOR", "pattern": ".majordomus/tasks/*.json", "actions": ["VIEW", "TRANSITION"]}
+  ]
+}

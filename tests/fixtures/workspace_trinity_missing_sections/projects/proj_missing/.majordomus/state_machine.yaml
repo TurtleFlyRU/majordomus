@@ -1,0 +1,22 @@
+version: 1
+states: [draft, approved, in_progress, dev_done, qa_done, arch_review, done]
+initial_state: draft
+transitions:
+  - from: draft
+    to: approved
+    allowed_roles: [ARCH]
+  - from: approved
+    to: in_progress
+    allowed_roles: [DEV]
+  - from: in_progress
+    to: dev_done
+    allowed_roles: [DEV]
+  - from: dev_done
+    to: qa_done
+    allowed_roles: [AUDITOR]
+  - from: qa_done
+    to: arch_review
+    allowed_roles: [ARCH]
+  - from: arch_review
+    to: done
+    allowed_roles: [ARCH]

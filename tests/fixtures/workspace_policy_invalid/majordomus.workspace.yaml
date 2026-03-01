@@ -1,0 +1,8 @@
+workspace_name: ws-policy-invalid
+defaults:
+  ordering: as_listed
+  governance_dir: .majordomus
+  missing_governance: fail
+projects:
+  - name: proj_pol
+    path: projects/proj_pol

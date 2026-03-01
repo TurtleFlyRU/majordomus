@@ -41,4 +41,4 @@ execution_plan:
       key: "readme_finalize"
       title: "README finalization and usage examples"
       status: "completed"
-      notes: "Release checklist passed: make ci OK, editable install OK, majordomus --help OK. Added majordomus init bootstrap installer."
+      notes: "Release checklist passed: make ci OK, editable install OK, majordomus --help OK. Added majordomus init bootstrap installer plus trinity profile, role policy enforcement, and TASK300 validation."

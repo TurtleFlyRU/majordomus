@@ -1,0 +1,6 @@
+{
+  "default_actions": ["VIEW"],
+  "rules": [
+    {"role": "ARCH", "pattern": ".majordomus/tasks/*.json", "actions": ["TRANSITION"]}
+  ]
+}

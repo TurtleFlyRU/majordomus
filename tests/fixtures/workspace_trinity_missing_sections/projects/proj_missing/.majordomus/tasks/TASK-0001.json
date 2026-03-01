@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "id": "TASK-0001",
+  "title": "Missing sections",
+  "status": "qa_done",
+  "owner_role": "AUDITOR",
+  "assignment": {
+    "goal": "validate missing sections",
+    "scope_in": ["qa"],
+    "scope_out": ["prod"],
+    "constraints": ["strict"],
+    "resources": ["r"]
+  },
+  "transitions": []
+}

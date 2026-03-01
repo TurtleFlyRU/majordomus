@@ -99,6 +99,30 @@ majordomus validate --path .
 majordomus workspace validate --workspace-file majordomus.workspace.yaml
 ```
 
+`majordomus init` now defaults to `--profile trinity` and creates:
+- `.majordomus/roles.yaml`
+- `.majordomus/state_machine.yaml`
+- `.majordomus/project.yaml` (`profile: trinity`)
+- `.majordomus/tasks/TASK-0001..TASK-0005.json`
+- `.majordomus/policies/role_policy.json`
+- `.majordomus/templates/*.json`
+- `.majordomus/docs/pipeline.json`
+- `.majordomus/docs/prompts/{arch,dev,auditor}.system.md`
+- `.majordomus/docs/methodology/{arch_dev.ru,arch_dev.en}.md`
+- `majordomus.workspace.yaml`
+
+Repository guidance sources:
+- [METODS.md](METODS.md) (general engineering methodology)
+- [METODS_ARCH_DEV.ru.md](METODS_ARCH_DEV.ru.md) (ARCH/DEV operational guide, RU)
+- [METODS_ARCH_DEV.en.md](METODS_ARCH_DEV.en.md) (ARCH/DEV operational guide, EN)
+
+Explicit profile commands:
+
+```bash
+majordomus init --path . --profile trinity
+majordomus init --path . --profile basic
+```
+
 `majordomus init` creates:
 - `.majordomus/roles.yaml`
 - `.majordomus/state_machine.yaml`
@@ -111,6 +135,7 @@ Useful init flags:
 - `--workspace-file <path>`
 - `--no-workspace`
 - `--force` (overwrite existing bootstrap files)
+- `--profile basic|trinity`
 
 Project mode:
 

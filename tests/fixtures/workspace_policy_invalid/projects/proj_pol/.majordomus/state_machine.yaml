@@ -1,0 +1,7 @@
+version: 1
+states: [draft, approved]
+initial_state: draft
+transitions:
+  - from: draft
+    to: approved
+    allowed_roles: [ARCH]

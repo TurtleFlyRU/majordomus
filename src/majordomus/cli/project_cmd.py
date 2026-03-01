@@ -12,6 +12,9 @@ from majordomus.core.schema_loader import SchemaLoader
 
 
 def run_project_validate(*, project_root: Path) -> ProjectReport:
+    resolved_root = project_root.resolve()
+    project_name = resolved_root.name or str(resolved_root)
+
     fs = LocalFileSystemAdapter()
     schema_loader = SchemaLoader()
     schema_validator = JsonschemaValidatorAdapter(schema_loader)
@@ -24,8 +27,8 @@ def run_project_validate(*, project_root: Path) -> ProjectReport:
     engine = ProjectEngine(fs=fs, governance_validator=validator)
 
     ctx = ProjectContext(
-        project=project_root.name,
-        project_root=project_root.resolve(),
+        project=project_name,
+        project_root=resolved_root,
         governance_dir=".majordomus",
         missing_governance=MissingGovernancePolicy.FAIL,
         mode=RunMode.VALIDATE,
