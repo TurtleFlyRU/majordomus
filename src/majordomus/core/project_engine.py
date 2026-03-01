@@ -5,6 +5,9 @@ import time
 from majordomus.core.domain import (
     Issue,
     Location,
+    MissingGovernancePolicy,
+    PRJ_GOVERNANCE_MISSING,
+    PRJ_PATH_ESCAPE,
     ProjectContext,
     ProjectReport,
     ProjectStats,
@@ -47,7 +50,7 @@ class ProjectEngine:
         except ValueError:
             issues.append(
                 Issue(
-                    code="PRJ010",
+                    code=PRJ_PATH_ESCAPE,
                     severity=Severity.ERROR,
                     message=f"Invalid governance_dir escape attempt: {ctx.governance_dir}",
                     location=Location(path=str(ctx.project_root)),
@@ -59,13 +62,14 @@ class ProjectEngine:
             )
 
         if not self._fs.is_dir(governance_root):
-            severity = Severity.WARN if ctx.missing_governance.value == "skip" else Severity.ERROR
+            should_skip = ctx.missing_governance == MissingGovernancePolicy.SKIP
+            severity = Severity.WARN if should_skip else Severity.ERROR
             status = (
-                ProjectStatus.SKIP if ctx.missing_governance.value == "skip" else ProjectStatus.FAIL
+                ProjectStatus.SKIP if should_skip else ProjectStatus.FAIL
             )
             issues.append(
                 Issue(
-                    code="PRJ010",
+                    code=PRJ_GOVERNANCE_MISSING,
                     severity=severity,
                     message=f"Governance directory is missing: {governance_root}",
                     location=Location(path=str(governance_root)),
@@ -77,6 +81,7 @@ class ProjectEngine:
         validation_issues, tasks_count = self._governance_validator.validate(
             project=ctx.project,
             governance_root=governance_root,
+            project_root=ctx.project_root,
         )
         issues.extend(validation_issues)
 
@@ -96,8 +101,8 @@ class ProjectEngine:
         sorted_issues = sort_issues(issues)
         errors = sum(1 for issue in sorted_issues if issue.severity == Severity.ERROR)
         warns = sum(1 for issue in sorted_issues if issue.severity == Severity.WARN)
-        _ = started
-        time_ms = 0
+        elapsed_ms = int((time.perf_counter() - started) * 1000)
+        time_ms = max(1, elapsed_ms)
 
         return ProjectReport(
             project=project,

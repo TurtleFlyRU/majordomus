@@ -5,6 +5,17 @@ from pathlib import Path
 from typing import Any
 
 from majordomus.core.domain import Issue, Location, Severity
+from majordomus.core.domain.error_codes import (
+    POL_PERMISSION_DENIED,
+    POL_STATE_VIOLATION,
+    PRJ_PARSE_ERROR,
+    PRJ_SCHEMA_ERROR,
+    PRJ_SEMANTIC_ERROR,
+    TASK_PARSE_ERROR,
+    TASK_SCHEMA_ERROR,
+    TASK_STATUS_ERROR,
+    TASK_TRANSITION_ERROR,
+)
 from majordomus.core.governance.policy_engine import RolePolicy
 from majordomus.core.governance.role_engine import RoleEngine
 from majordomus.core.governance.state_machine import StateMachine
@@ -25,7 +36,9 @@ class ProjectGovernanceValidator:
         self._role_engine = role_engine
         self._task_registry = task_registry
 
-    def validate(self, *, project: str, governance_root: Path) -> tuple[list[Issue], int]:
+    def validate(
+        self, *, project: str, governance_root: Path, project_root: Path
+    ) -> tuple[list[Issue], int]:
         issues: list[Issue] = []
         profile = self._resolve_profile(
             project=project, governance_root=governance_root, issues=issues
@@ -36,7 +49,7 @@ class ProjectGovernanceValidator:
 
         roles_payload, roles_parse_issues = parse_yaml_file(
             roles_path,
-            code="PRJ101",
+            code=PRJ_PARSE_ERROR,
             message="Cannot parse roles.yaml",
             project=project,
         )
@@ -47,7 +60,7 @@ class ProjectGovernanceValidator:
             schema_issues = self._schema_validator.validate(
                 "roles_schema_v1.json",
                 roles_payload,
-                code="PRJ101",
+                code=PRJ_SCHEMA_ERROR,
                 project=project,
                 location_path=str(roles_path),
             )
@@ -62,7 +75,7 @@ class ProjectGovernanceValidator:
 
         sm_payload, sm_parse_issues = parse_yaml_file(
             state_machine_path,
-            code="PRJ101",
+            code=PRJ_PARSE_ERROR,
             message="Cannot parse state_machine.yaml",
             project=project,
         )
@@ -73,7 +86,7 @@ class ProjectGovernanceValidator:
             schema_issues = self._schema_validator.validate(
                 "state_machine_schema_v1.json",
                 sm_payload,
-                code="PRJ101",
+                code=PRJ_SCHEMA_ERROR,
                 project=project,
                 location_path=str(state_machine_path),
             )
@@ -98,7 +111,7 @@ class ProjectGovernanceValidator:
         for task_file in task_files:
             task_payload, task_parse_issues = parse_json_file(
                 task_file,
-                code="TASK100",
+                code=TASK_PARSE_ERROR,
                 message="Cannot parse task JSON",
                 project=project,
             )
@@ -110,7 +123,7 @@ class ProjectGovernanceValidator:
             schema_issues = self._schema_validator.validate(
                 "task_schema_v1.json",
                 task_payload,
-                code="TASK101",
+                code=TASK_SCHEMA_ERROR,
                 project=project,
                 location_path=str(task_file),
                 task_id=task_id or None,
@@ -125,12 +138,13 @@ class ProjectGovernanceValidator:
                 project=project,
                 role_ids=role_ids,
                 state_machine=state_machine,
-                governance_root=governance_root,
+                project_root=project_root,
                 policy=policy,
                 profile=profile,
                 issues=issues,
             )
 
+        # tasks_count = number of discovered task files (not necessarily valid tasks)
         return sort_issues(issues), len(task_files)
 
     def _resolve_profile(
@@ -146,7 +160,7 @@ class ProjectGovernanceValidator:
 
         payload, parse_issues = parse_yaml_file(
             project_yaml_path,
-            code="PRJ101",
+            code=PRJ_PARSE_ERROR,
             message="Cannot parse project.yaml",
             project=project,
         )
@@ -159,7 +173,7 @@ class ProjectGovernanceValidator:
         if profile not in {"basic", "trinity"}:
             issues.append(
                 Issue(
-                    code="PRJ101",
+                    code=PRJ_SEMANTIC_ERROR,
                     severity=Severity.ERROR,
                     message=f"Unknown project profile '{raw_profile}'",
                     location=Location(path=str(project_yaml_path)),
@@ -223,7 +237,7 @@ class ProjectGovernanceValidator:
         project: str,
         role_ids: set[str],
         state_machine: StateMachine | None,
-        governance_root: Path,
+        project_root: Path,
         policy: RolePolicy | None,
         profile: str,
         issues: list[Issue],
@@ -247,7 +261,7 @@ class ProjectGovernanceValidator:
         if status not in states:
             issues.append(
                 Issue(
-                    code="TASK200",
+                    code=TASK_STATUS_ERROR,
                     severity=Severity.ERROR,
                     message=f"Unknown task status '{status}'",
                     location=Location(path=str(task_file)),
@@ -276,7 +290,7 @@ class ProjectGovernanceValidator:
                     sm_transition.allowed_roles
                 )
 
-        relative_task_path = _to_project_relative_path(task_file, governance_root.parent)
+        relative_task_path = _to_project_relative_path(task_file, project_root)
 
         for task_transition in payload.get("transitions", []):
             if not isinstance(task_transition, dict):
@@ -289,7 +303,7 @@ class ProjectGovernanceValidator:
             if source not in states or target not in states:
                 issues.append(
                     Issue(
-                        code="TASK200",
+                        code=TASK_STATUS_ERROR,
                         severity=Severity.ERROR,
                         message=f"Transition has unknown state ({source} -> {target})",
                         location=Location(path=str(task_file)),
@@ -316,7 +330,7 @@ class ProjectGovernanceValidator:
             if allowed_roles is None:
                 issues.append(
                     Issue(
-                        code="TASK200",
+                        code=TASK_TRANSITION_ERROR,
                         severity=Severity.ERROR,
                         message=(
                             f"Transition ({source} -> {target}) is not declared in state machine"
@@ -331,7 +345,7 @@ class ProjectGovernanceValidator:
             if role not in allowed_roles:
                 issues.append(
                     Issue(
-                        code="POL200",
+                        code=POL_STATE_VIOLATION,
                         severity=Severity.ERROR,
                         message=(
                             f"Role '{role}' is not allowed by state machine for transition "
@@ -350,7 +364,7 @@ class ProjectGovernanceValidator:
             ):
                 issues.append(
                     Issue(
-                        code="POL200",
+                        code=POL_PERMISSION_DENIED,
                         severity=Severity.ERROR,
                         message=(
                             f"Role '{role}' is not permitted to perform TRANSITION on "
@@ -370,7 +384,7 @@ class ProjectGovernanceValidator:
             if created_ts is None or updated_ts is None:
                 issues.append(
                     Issue(
-                        code="TASK101",
+                        code=TASK_SCHEMA_ERROR,
                         severity=Severity.ERROR,
                         message="Invalid datetime format in created_at/updated_at",
                         location=Location(path=str(task_file)),
@@ -381,7 +395,7 @@ class ProjectGovernanceValidator:
             elif updated_ts < created_ts:
                 issues.append(
                     Issue(
-                        code="TASK101",
+                        code=TASK_SCHEMA_ERROR,
                         severity=Severity.ERROR,
                         message="updated_at must be greater or equal to created_at",
                         location=Location(path=str(task_file)),
@@ -392,7 +406,7 @@ class ProjectGovernanceValidator:
 
         if profile == "trinity":
             self._validate_trinity_task_payload(
-                payload, task_file, project, task_id, status, issues
+                payload, task_file, project, task_id, status, state_machine, issues
             )
 
     def _validate_trinity_task_payload(
@@ -402,6 +416,7 @@ class ProjectGovernanceValidator:
         project: str,
         task_id: str,
         status: str,
+        state_machine: StateMachine | None,
         issues: list[Issue],
     ) -> None:
         assignment = payload.get("assignment")
@@ -417,7 +432,9 @@ class ProjectGovernanceValidator:
                 )
             )
 
-        needs_implementation = status in {"dev_done", "qa_done", "arch_review", "done"}
+        needs_implementation = (
+            state_machine.requires_implementation(status) if state_machine is not None else False
+        )
         if needs_implementation and not _is_non_empty_mapping(payload.get("implementation")):
             issues.append(
                 Issue(
@@ -433,7 +450,9 @@ class ProjectGovernanceValidator:
                 )
             )
 
-        needs_verification = status in {"qa_done", "arch_review", "done"}
+        needs_verification = (
+            state_machine.requires_verification(status) if state_machine is not None else False
+        )
         if needs_verification and not _is_non_empty_mapping(payload.get("verification")):
             issues.append(
                 Issue(

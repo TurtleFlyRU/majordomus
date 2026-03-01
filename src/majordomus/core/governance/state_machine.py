@@ -19,6 +19,14 @@ class StateMachine:
     initial_state: str
     transitions: tuple[Transition, ...]
 
+    def requires_implementation(self, state: str) -> bool:
+        anchor = self._furthest_target_for_role("DEV")
+        return self._is_at_or_after_anchor(state, anchor)
+
+    def requires_verification(self, state: str) -> bool:
+        anchor = self._furthest_target_for_role("AUDITOR")
+        return self._is_at_or_after_anchor(state, anchor)
+
     @classmethod
     def from_payload(
         cls,
@@ -95,3 +103,24 @@ class StateMachine:
             return None, issues
 
         return cls(states=states, initial_state=initial_state, transitions=tuple(transitions)), []
+
+    def _furthest_target_for_role(self, role: str) -> str | None:
+        state_order = {name: index for index, name in enumerate(self.states)}
+        candidates = [
+            transition.target
+            for transition in self.transitions
+            if role in transition.allowed_roles and transition.target in state_order
+        ]
+        if not candidates:
+            return None
+        return max(candidates, key=state_order.__getitem__)
+
+    def _is_at_or_after_anchor(self, state: str, anchor: str | None) -> bool:
+        if anchor is None:
+            return False
+        state_order = {name: index for index, name in enumerate(self.states)}
+        state_index = state_order.get(state)
+        anchor_index = state_order.get(anchor)
+        if state_index is None or anchor_index is None:
+            return False
+        return state_index >= anchor_index
