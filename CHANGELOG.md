@@ -22,6 +22,7 @@
   - `WorkspaceEngine`
 - Plugin system v1 hooks (`PluginHost`, `BasePlugin`).
 - CLI commands:
+  - `majordomus init`
   - `majordomus validate`
   - `majordomus workspace validate|status|audit`
 - Human/JSON renderers and exit code contract (`0/2/3/4`).

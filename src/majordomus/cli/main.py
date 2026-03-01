@@ -4,6 +4,7 @@ import argparse
 import sys
 from pathlib import Path
 
+from majordomus.cli.init_cmd import render_init_report, run_init_command
 from majordomus.cli.project_cmd import run_project_validate
 from majordomus.cli.render import render_project_report, render_workspace_report
 from majordomus.cli.workspace_cmd import run_workspace_command
@@ -20,6 +21,15 @@ def build_parser() -> argparse.ArgumentParser:
 
     project_parser = subparsers.add_parser("validate")
     project_parser.add_argument("--path", type=Path, default=Path("."))
+
+    init_parser = subparsers.add_parser("init")
+    init_parser.add_argument("--path", type=Path, default=Path("."))
+    init_parser.add_argument("--project-name", type=str, default=None)
+    init_parser.add_argument(
+        "--workspace-file", type=Path, default=Path("majordomus.workspace.yaml")
+    )
+    init_parser.add_argument("--no-workspace", action="store_true")
+    init_parser.add_argument("--force", action="store_true")
 
     workspace_parser = subparsers.add_parser("workspace")
     workspace_sub = workspace_parser.add_subparsers(dest="workspace_command", required=True)
@@ -50,6 +60,17 @@ def run(argv: list[str] | None = None) -> int:
             )
             print(render_workspace_report(workspace_report, args.output_format))
             return int(workspace_report.exit_code)
+
+        if args.command == "init":
+            init_report = run_init_command(
+                project_root=args.path,
+                project_name=args.project_name,
+                workspace_file=args.workspace_file,
+                include_workspace=not args.no_workspace,
+                force=args.force,
+            )
+            print(render_init_report(init_report, args.output_format))
+            return 0
 
         return 3
     except Exception as exc:  # pragma: no cover

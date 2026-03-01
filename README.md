@@ -90,6 +90,28 @@ Each project is validated in isolation from its own governance directory:
 
 ## CLI Usage
 
+One-shot bootstrap in any project:
+
+```bash
+cd /path/to/your-project
+majordomus init --path .
+majordomus validate --path .
+majordomus workspace validate --workspace-file majordomus.workspace.yaml
+```
+
+`majordomus init` creates:
+- `.majordomus/roles.yaml`
+- `.majordomus/state_machine.yaml`
+- `.majordomus/project.yaml`
+- `.majordomus/tasks/TASK-0001.json`
+- `majordomus.workspace.yaml` (unless `--no-workspace` is set)
+
+Useful init flags:
+- `--project-name <name>`
+- `--workspace-file <path>`
+- `--no-workspace`
+- `--force` (overwrite existing bootstrap files)
+
 Project mode:
 
 ```bash
