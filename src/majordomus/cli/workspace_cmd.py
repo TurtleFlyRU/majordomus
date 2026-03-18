@@ -21,17 +21,21 @@ def run_workspace_command(
     fs = LocalFileSystemAdapter()
     schema_loader = SchemaLoader()
     schema_validator = JsonschemaValidatorAdapter(schema_loader)
+    plugin_host = PluginHost([])
 
     governance_validator = ProjectGovernanceValidator(
         schema_validator=schema_validator,
         role_engine=RoleEngine(),
         task_registry=TaskRegistry(fs),
+        plugin_host=plugin_host,
     )
-    project_engine = ProjectEngine(fs=fs, governance_validator=governance_validator)
+    project_engine = ProjectEngine(
+        fs=fs, governance_validator=governance_validator, plugin_host=plugin_host
+    )
     workspace_engine = WorkspaceEngine(
         project_engine=project_engine,
         schema_validator=schema_validator,
-        plugin_host=PluginHost([]),
+        plugin_host=plugin_host,
     )
 
     mode = RunMode(action)

@@ -1,0 +1,51 @@
+{
+  "/home/user/projects/majordomus/tests/fixtures/workspace_trinity_missing_sections/projects/proj_missing/.majordomus/tasks/TASK-0001.json": {
+    "hash": "2e1d1d646efbad8a43d1159637c4e20897358cfcee5f9216040f07ef5ed27ce9",
+    "issues": [
+      {
+        "code": "TASK300",
+        "severity": "ERROR",
+        "message": "Trinity task status requires non-empty 'implementation' object (status=qa_done)",
+        "location": {
+          "path": "/home/user/projects/majordomus/tests/fixtures/workspace_trinity_missing_sections/projects/proj_missing/.majordomus/tasks/TASK-0001.json",
+          "line": 1
+        },
+        "project": "proj_missing",
+        "task_id": "TASK-0001"
+      },
+      {
+        "code": "TASK300",
+        "severity": "ERROR",
+        "message": "Trinity task status requires non-empty 'verification' object (status=qa_done)",
+        "location": {
+          "path": "/home/user/projects/majordomus/tests/fixtures/workspace_trinity_missing_sections/projects/proj_missing/.majordomus/tasks/TASK-0001.json",
+          "line": 1
+        },
+        "project": "proj_missing",
+        "task_id": "TASK-0001"
+      },
+      {
+        "code": "TASK300",
+        "severity": "ERROR",
+        "message": "Trinity task status requires non-empty 'evidence' list (status=qa_done)",
+        "location": {
+          "path": "/home/user/projects/majordomus/tests/fixtures/workspace_trinity_missing_sections/projects/proj_missing/.majordomus/tasks/TASK-0001.json",
+          "line": 1
+        },
+        "project": "proj_missing",
+        "task_id": "TASK-0001"
+      },
+      {
+        "code": "TASK300",
+        "severity": "ERROR",
+        "message": "Trinity task status requires non-empty 'acceptance_checks' list (status=qa_done)",
+        "location": {
+          "path": "/home/user/projects/majordomus/tests/fixtures/workspace_trinity_missing_sections/projects/proj_missing/.majordomus/tasks/TASK-0001.json",
+          "line": 1
+        },
+        "project": "proj_missing",
+        "task_id": "TASK-0001"
+      }
+    ]
+  }
+}

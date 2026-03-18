@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from majordomus.core.domain import Issue, Location, Severity
 from majordomus.core.domain.error_codes import (
@@ -16,12 +16,18 @@ from majordomus.core.domain.error_codes import (
     TASK_STATUS_ERROR,
     TASK_TRANSITION_ERROR,
 )
+from majordomus.core.governance.cache import ValidationCache
 from majordomus.core.governance.policy_engine import RolePolicy
 from majordomus.core.governance.role_engine import RoleEngine
 from majordomus.core.governance.state_machine import StateMachine
 from majordomus.core.governance.task_registry import TaskRegistry
+from majordomus.core.plugins.host import PluginHost
 from majordomus.core.ports.schema_validator import JsonSchemaValidatorPort
-from majordomus.core.util.parsing import parse_json_file, parse_yaml_file
+from majordomus.core.util.parsing import (
+    parse_json_file,
+    parse_yaml_file,
+    parse_yaml_with_line_numbers,
+)
 from majordomus.core.util.sorting import sort_issues
 
 
@@ -31,10 +37,12 @@ class ProjectGovernanceValidator:
         schema_validator: JsonSchemaValidatorPort,
         role_engine: RoleEngine,
         task_registry: TaskRegistry,
+        plugin_host: PluginHost | None = None,
     ) -> None:
         self._schema_validator = schema_validator
         self._role_engine = role_engine
         self._task_registry = task_registry
+        self._plugin_host = plugin_host or PluginHost([])
 
     def validate(
         self, *, project: str, governance_root: Path, project_root: Path
@@ -46,8 +54,10 @@ class ProjectGovernanceValidator:
 
         roles_path = governance_root / "roles.yaml"
         state_machine_path = governance_root / "state_machine.yaml"
+        cache_path = governance_root / "cache.json"
+        cache = ValidationCache(cache_path)
 
-        roles_payload, roles_parse_issues = parse_yaml_file(
+        roles_payload, roles_parse_issues = parse_yaml_with_line_numbers(
             roles_path,
             code=PRJ_PARSE_ERROR,
             message="Cannot parse roles.yaml",
@@ -73,7 +83,7 @@ class ProjectGovernanceValidator:
                 )
                 issues.extend(role_issues)
 
-        sm_payload, sm_parse_issues = parse_yaml_file(
+        sm_payload, sm_parse_issues = parse_yaml_with_line_numbers(
             state_machine_path,
             code=PRJ_PARSE_ERROR,
             message="Cannot parse state_machine.yaml",
@@ -100,6 +110,9 @@ class ProjectGovernanceValidator:
                 )
                 issues.extend(sm_issues)
 
+        if state_machine:
+            self._plugin_host.on_governance_loaded(project, role_ids, state_machine)
+
         policy = self._load_policy(
             project=project,
             governance_root=governance_root,
@@ -109,14 +122,31 @@ class ProjectGovernanceValidator:
 
         task_files = self._task_registry.list_task_files(governance_root)
         for task_file in task_files:
+            current_task_hash = ValidationCache.calculate_hash(task_file)
+            cached_issues = cache.get_issues(task_file, current_task_hash)
+            
+            if cached_issues is not None:
+                issues.extend(cached_issues)
+                # For cached tasks, we still want to trigger the hook.
+                # We need the task_id, which we can get from the cached issues if any had it,
+                # or just parse the file (which defeats some caching but is fast).
+                # Actually, ValidationCache could store task_id too.
+                # For now, let's just get task_id from filename as a fallback.
+                task_id = task_file.stem
+                self._plugin_host.on_task_validated(task_id, cached_issues)
+                continue
+
+            current_task_issues: list[Issue] = []
             task_payload, task_parse_issues = parse_json_file(
                 task_file,
                 code=TASK_PARSE_ERROR,
                 message="Cannot parse task JSON",
                 project=project,
             )
-            issues.extend(task_parse_issues)
+            current_task_issues.extend(task_parse_issues)
             if task_payload is None:
+                issues.extend(current_task_issues)
+                cache.set_issues(task_file, current_task_hash, current_task_issues)
                 continue
 
             task_id = str(task_payload.get("id", ""))
@@ -128,22 +158,26 @@ class ProjectGovernanceValidator:
                 location_path=str(task_file),
                 task_id=task_id or None,
             )
-            issues.extend(schema_issues)
-            if schema_issues:
-                continue
+            current_task_issues.extend(schema_issues)
+            if not schema_issues:
+                self._validate_task_semantics(
+                    payload=task_payload,
+                    task_file=task_file,
+                    project=project,
+                    role_ids=role_ids,
+                    state_machine=state_machine,
+                    project_root=project_root,
+                    policy=policy,
+                    profile=profile,
+                    issues=current_task_issues,
+                )
+            
+            issues.extend(current_task_issues)
+            cache.set_issues(task_file, current_task_hash, current_task_issues)
+            if task_id:
+                self._plugin_host.on_task_validated(task_id, current_task_issues)
 
-            self._validate_task_semantics(
-                payload=task_payload,
-                task_file=task_file,
-                project=project,
-                role_ids=role_ids,
-                state_machine=state_machine,
-                project_root=project_root,
-                policy=policy,
-                profile=profile,
-                issues=issues,
-            )
-
+        cache.save()
         # tasks_count = number of discovered task files (not necessarily valid tasks)
         return sort_issues(issues), len(task_files)
 

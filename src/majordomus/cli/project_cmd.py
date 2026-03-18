@@ -7,6 +7,7 @@ from majordomus.core.domain import MissingGovernancePolicy, ProjectContext, Proj
 from majordomus.core.governance.role_engine import RoleEngine
 from majordomus.core.governance.task_registry import TaskRegistry
 from majordomus.core.governance.validator import ProjectGovernanceValidator
+from majordomus.core.plugins.host import PluginHost
 from majordomus.core.project_engine import ProjectEngine
 from majordomus.core.schema_loader import SchemaLoader
 
@@ -18,13 +19,17 @@ def run_project_validate(*, project_root: Path) -> ProjectReport:
     fs = LocalFileSystemAdapter()
     schema_loader = SchemaLoader()
     schema_validator = JsonschemaValidatorAdapter(schema_loader)
+    plugin_host = PluginHost([])
 
     validator = ProjectGovernanceValidator(
         schema_validator=schema_validator,
         role_engine=RoleEngine(),
         task_registry=TaskRegistry(fs),
+        plugin_host=plugin_host,
     )
-    engine = ProjectEngine(fs=fs, governance_validator=validator)
+    engine = ProjectEngine(
+        fs=fs, governance_validator=validator, plugin_host=plugin_host
+    )
 
     ctx = ProjectContext(
         project=project_name,

@@ -1,0 +1,18 @@
+{
+  "/home/user/projects/majordomus/tests/fixtures/workspace_policy_forbidden/projects/proj_forbid/.majordomus/tasks/TASK-0001.json": {
+    "hash": "cefd83ecd2dad5685c3b6f3056905f78ddcca57840716f77fb25bad6528f0e76",
+    "issues": [
+      {
+        "code": "POL201",
+        "severity": "ERROR",
+        "message": "Role 'DEV' is not permitted to perform TRANSITION on '.majordomus/tasks/TASK-0001.json'",
+        "location": {
+          "path": "/home/user/projects/majordomus/tests/fixtures/workspace_policy_forbidden/projects/proj_forbid/.majordomus/tasks/TASK-0001.json",
+          "line": 1
+        },
+        "project": "proj_forbid",
+        "task_id": "TASK-0001"
+      }
+    ]
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "/home/user/projects/majordomus/tests/fixtures/workspace_broken_task_json/projects/proj_bad/.majordomus/tasks/TASK-0099.json": {
+    "hash": "f56a5437be2f71a613de155a7c384ad3251a9a44f6372a7cae4c7a3f71e102fb",
+    "issues": [
+      {
+        "code": "TASK100",
+        "severity": "ERROR",
+        "message": "Cannot parse task JSON: Expecting property name enclosed in double quotes",
+        "location": {
+          "path": "/home/user/projects/majordomus/tests/fixtures/workspace_broken_task_json/projects/proj_bad/.majordomus/tasks/TASK-0099.json",
+          "line": 6,
+          "col": 1
+        },
+        "project": "proj_bad"
+      }
+    ]
+  }
+}

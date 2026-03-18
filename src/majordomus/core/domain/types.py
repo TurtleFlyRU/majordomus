@@ -19,6 +19,14 @@ class Location:
             data["col"] = self.col
         return data
 
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> Location:
+        return cls(
+            path=data["path"],
+            line=data.get("line", 1),
+            col=data.get("col"),
+        )
+
 
 @dataclass(frozen=True)
 class Issue:
@@ -44,6 +52,18 @@ class Issue:
         if self.data is not None:
             payload["data"] = self.data
         return payload
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> Issue:
+        return cls(
+            code=data["code"],
+            severity=Severity(data["severity"]),
+            message=data["message"],
+            location=Location.from_dict(data["location"]),
+            project=data.get("project"),
+            task_id=data.get("task_id"),
+            data=data.get("data"),
+        )
 
 
 @dataclass(frozen=True)

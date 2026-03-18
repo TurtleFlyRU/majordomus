@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 from typing import Any
 
 import jsonschema
@@ -24,13 +25,17 @@ class JsonschemaValidatorAdapter(JsonSchemaValidatorPort):
         task_id: str | None = None,
     ) -> list[Issue]:
         schema = self._schema_loader.load(schema_name)
+        
+        # Clean payload from internal __line__ markers before validation
+        clean_payload = _strip_internal_keys(payload)
+        
         validator = jsonschema.Draft202012Validator(
             schema,
             format_checker=jsonschema.Draft202012Validator.FORMAT_CHECKER,
         )
         issues: list[Issue] = []
 
-        for error in sorted(validator.iter_errors(payload), key=lambda item: str(item.path)):
+        for error in sorted(validator.iter_errors(clean_payload), key=lambda item: str(item.path)):
             path_bits = [str(part) for part in error.path]
             path_str = ".".join(path_bits) if path_bits else "$"
             issues.append(
@@ -44,3 +49,15 @@ class JsonschemaValidatorAdapter(JsonSchemaValidatorPort):
                 )
             )
         return issues
+
+
+def _strip_internal_keys(data: Any) -> Any:
+    if isinstance(data, dict):
+        return {
+            k: _strip_internal_keys(v) 
+            for k, v in data.items() 
+            if k != "__line__"
+        }
+    if isinstance(data, list):
+        return [_strip_internal_keys(item) for item in data]
+    return data

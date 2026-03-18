@@ -15,6 +15,7 @@ from majordomus.core.domain import (
     Severity,
 )
 from majordomus.core.governance.validator import ProjectGovernanceValidator
+from majordomus.core.plugins.host import PluginHost
 from majordomus.core.ports.filesystem import FileSystemPort
 from majordomus.core.util.paths import safe_join
 from majordomus.core.util.sorting import sort_issues
@@ -22,10 +23,14 @@ from majordomus.core.util.sorting import sort_issues
 
 class ProjectEngine:
     def __init__(
-        self, fs: FileSystemPort, governance_validator: ProjectGovernanceValidator
+        self,
+        fs: FileSystemPort,
+        governance_validator: ProjectGovernanceValidator,
+        plugin_host: PluginHost | None = None,
     ) -> None:
         self._fs = fs
         self._governance_validator = governance_validator
+        self._plugin_host = plugin_host or PluginHost([])
 
     def run(self, ctx: ProjectContext) -> ProjectReport:
         started = time.perf_counter()
