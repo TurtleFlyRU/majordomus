@@ -25,6 +25,7 @@ from majordomus.core.plugins.host import PluginHost
 from majordomus.core.ports.schema_validator import JsonSchemaValidatorPort
 from majordomus.core.util.parsing import (
     parse_json_file,
+    parse_json_with_line_numbers,
     parse_yaml_file,
     parse_yaml_with_line_numbers,
 )
@@ -127,17 +128,12 @@ class ProjectGovernanceValidator:
             
             if cached_issues is not None:
                 issues.extend(cached_issues)
-                # For cached tasks, we still want to trigger the hook.
-                # We need the task_id, which we can get from the cached issues if any had it,
-                # or just parse the file (which defeats some caching but is fast).
-                # Actually, ValidationCache could store task_id too.
-                # For now, let's just get task_id from filename as a fallback.
                 task_id = task_file.stem
                 self._plugin_host.on_task_validated(task_id, cached_issues)
                 continue
 
             current_task_issues: list[Issue] = []
-            task_payload, task_parse_issues = parse_json_file(
+            task_payload, task_parse_issues = parse_json_with_line_numbers(
                 task_file,
                 code=TASK_PARSE_ERROR,
                 message="Cannot parse task JSON",
@@ -548,7 +544,11 @@ def _parse_datetime(value: str) -> datetime | None:
 
 
 def _is_non_empty_mapping(value: Any) -> bool:
-    return isinstance(value, dict) and len(value) > 0
+    if not isinstance(value, dict):
+        return False
+    keys = set(value.keys())
+    keys.discard("__line__")
+    return len(keys) > 0
 
 
 def _is_non_empty_list(value: Any) -> bool:

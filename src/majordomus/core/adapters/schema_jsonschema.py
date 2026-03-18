@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import copy
-from typing import Any
+from typing import Any, Iterable
 
 import jsonschema
 
@@ -38,17 +38,42 @@ class JsonschemaValidatorAdapter(JsonSchemaValidatorPort):
         for error in sorted(validator.iter_errors(clean_payload), key=lambda item: str(item.path)):
             path_bits = [str(part) for part in error.path]
             path_str = ".".join(path_bits) if path_bits else "$"
+            
+            line = _find_line_number(payload, error.path)
+            
             issues.append(
                 Issue(
                     code=code,
                     severity=Severity.ERROR,
                     message=f"Schema validation failed at {path_str}: {error.message}",
-                    location=Location(path=location_path),
+                    location=Location(path=location_path, line=line),
                     project=project,
                     task_id=task_id,
                 )
             )
         return issues
+
+
+def _find_line_number(data: Any, path: Iterable[str | int]) -> int:
+    line = 1
+    if isinstance(data, dict) and "__line__" in data:
+        line = data["__line__"]
+    
+    current = data
+    for part in path:
+        if isinstance(current, dict) and part in current:
+            current = current[part]
+            if isinstance(current, dict) and "__line__" in current:
+                line = current["__line__"]
+        elif isinstance(current, list) and isinstance(part, int) and 0 <= part < len(current):
+            current = current[part]
+            if isinstance(current, dict) and "__line__" in current:
+                line = current["__line__"]
+        else:
+            # If we can't go deeper (e.g. primitive value or missing key), 
+            # we keep the last found line number
+            break
+    return line
 
 
 def _strip_internal_keys(data: Any) -> Any:
