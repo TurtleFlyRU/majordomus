@@ -7,11 +7,53 @@ Major Domus v1 is a deterministic, filesystem-only governance orchestrator for m
 - Output formats: `human` and `json`
 - Exit codes: `0`, `2`, `3`, `4`
 
-v1 scope explicitly excludes cross-project dependency logic (planned for v2).
+## How It Works: The Philosophy
 
-## Machine-Readable Plan
+Majordomus is not just a validator; it's a **guardrail** for your development process. It enforces the **Trinity Pipeline**: a sequence of mandatory states that every task must pass through to be considered "done".
 
-Plan file: [execution_plan.yaml](execution_plan.yaml)
+### The Trinity Pipeline
+1. **DRAFT** (ARCH): The task is being defined.
+2. **APPROVED** (ARCH): The goal, scope, and constraints are finalized.
+3. **IN_PROGRESS** (DEV): The work is being actively done.
+4. **DEV_DONE** (DEV): Coding is finished, unit tests passed.
+5. **QA_DONE** (AUDITOR): Verification and evidence collected.
+6. **ARCH_REVIEW** (ARCH): Final architectural check.
+7. **DONE** (ARCH): Task officially closed.
+
+### Technical Enforcement
+- **State Machine:** You cannot skip steps (e.g., jumping from `APPROVED` to `DONE` is forbidden).
+- **Role Discipline:** Only specific roles can trigger specific transitions (e.g., a `DEV` cannot close a task).
+- **Completeness:** Certain states require specific fields (e.g., `DEV_DONE` requires `implementation.changed_files`).
+
+## Success Path: Step-by-Step
+
+1. **Bootstrap:** Run `majordomus init --profile trinity`. This creates your governance files and initial tasks.
+2. **Acceptance:** Move `TASK-0001` from `DRAFT` to `APPROVED` by adding a transition in the JSON.
+3. **Development:** Update the task to `IN_PROGRESS`, perform the work, then move to `DEV_DONE` while filling out the `implementation` section.
+4. **Validation:** ALWAYS run `majordomus validate --path .` before and after any change. 
+5. **Continuous Governance:** Keep the status `PASS`. If it's `FAIL`, the process is broken.
+
+## Failure States & Troubleshooting
+
+If `majordomus validate` returns **`status=FAIL`**, the system is "not working". Here is how to fix it:
+
+### Common Error Codes
+- **`TASK101` (Schema Error):** Your JSON is missing a required field (e.g., `schema_version: 1`).
+- **`TASK201` (Transition Error):** You tried to skip a state or use an unauthorized role. Check `.majordomus/state_machine.yaml`.
+- **`TASK300` (Missing Sections):** You moved to a state (like `DONE`) but didn't fill in the required sections (like `evidence` or `verification`).
+- **`POL201` (Permission Denied):** You modified a file you're not allowed to touch (e.g., a DEV modified `.majordomus/` policy files).
+
+### How to Fix
+1. Read the error message carefully: it tells you the **File**, the **Task ID**, and the **Reason**.
+2. Open the offending `TASK-*.json` file.
+3. Fix the JSON to match the requirements of the current state.
+4. Re-run `majordomus validate`.
+
+## AI Agent Integration
+
+Majordomus is specifically designed to control AI Agents (like Gemini CLI, Claude, etc.).
+- **`GEMINI.md`**: Provides high-level instructions to the agent to respect the governance.
+- **`MAJORDOMUS.md`**: Standardizes the "Compressed Transition" protocol for AI efficiency.
 
 ## Installation
 

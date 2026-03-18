@@ -212,6 +212,11 @@ def _build_trinity_files(
     methodology_ru_path = methodology_dir / "arch_dev.ru.md"
     methodology_en_path = methodology_dir / "arch_dev.en.md"
 
+    # Core guard files
+    majordomus_md_path = project_root / "MAJORDOMUS.md"
+    gemini_md_path = project_root / "GEMINI.md"
+    pre_commit_path = project_root / ".pre-commit-config.yaml"
+
     roles_content = (
         "version: 1\n"
         "roles:\n"
@@ -258,6 +263,58 @@ def _build_trinity_files(
 
     task_payloads = _default_trinity_tasks()
     policy_payload = _default_trinity_policy()
+    
+    # Pre-commit config
+    pre_commit_content = """repos:
+  - repo: local
+    hooks:
+      - id: majordomus-validate
+        name: Majordomus Governance Validation
+        entry: majordomus validate --path .
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [commit]
+"""
+
+    # MAJORDOMUS.md
+    majordomus_md_content = f"""# Majordomus Universal Governance: {project_name}
+
+## 🛡️ Technical Enforcement
+- **Pre-flight:** Run `majordomus validate --path .` before any code change.
+- **Commit Guard:** No changes accepted without an active `TASK-*.json` in `APPROVED` or `IN_PROGRESS`.
+- **Pre-commit:** Install via `pre-commit install`.
+
+## 🚀 AI Agent Optimized Pipeline
+AI agents are allowed to use "Compressed Transitions" for token efficiency:
+- **DEV:** `APPROVED -> IN_PROGRESS -> DEV_DONE` in one edit.
+- **AUDITOR:** `DEV_DONE -> QA_DONE` with evidence.
+- **ARCH:** `QA_DONE -> ARCH_REVIEW -> DONE`.
+
+Transitions MUST be recorded with valid UTC timestamps.
+"""
+
+    # GEMINI.md (Enforcement for Gemini CLI)
+    gemini_md_content = f"""# 📜 THE {project_name.upper()} BIBLE (Trinity v3 Mandate)
+
+## 🏛️ CORE MANDATES
+1. **Contract First:** All data changes start in `/contracts/`.
+2. **Role Discipline:** ARCH, DEV, or AUDITOR roles must be explicit.
+3. **MAJORDOMUS ENFORCEMENT:** No changes to `src/` or `infra/` without an active TASK.
+
+## 🔄 TRINITY PIPELINE
+Follow `DRAFT -> APPROVED -> IN_PROGRESS -> DEV_DONE -> QA_DONE -> ARCH_REVIEW -> DONE`.
+
+## 🛠️ CRITICAL HOOKS
+**Before ANY modification:**
+1. Run `majordomus validate --path .`. If status is FAIL, fix governance FIRST.
+2. Ensure TASK is in `APPROVED` or `IN_PROGRESS`.
+
+**After modification:**
+1. Update `TASK-*.json` with `implementation.changed_files` and `checks_run`.
+2. Run validation again.
+"""
+
     task_template_payload = {
         "schema_version": 1,
         "id": "TASK-0000",
@@ -335,6 +392,10 @@ def _build_trinity_files(
         _write_file(auditor_prompt_path, auditor_prompt, force=force),
         _write_file(methodology_ru_path, methodology_ru, force=force),
         _write_file(methodology_en_path, methodology_en, force=force),
+        # New guard files
+        _write_file(majordomus_md_path, majordomus_md_content, force=force),
+        _write_file(gemini_md_path, gemini_md_content, force=force),
+        _write_file(pre_commit_path, pre_commit_content, force=force),
     ]
 
     for payload in task_payloads:
@@ -342,6 +403,7 @@ def _build_trinity_files(
         actions.append(_write_file(task_path, _to_json_text(payload), force=force))
 
     return actions
+
 
 
 def _default_trinity_policy() -> dict[str, Any]:
